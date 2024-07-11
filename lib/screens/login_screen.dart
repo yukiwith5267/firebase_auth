@@ -1,3 +1,4 @@
+import 'package:demo/screens/forgot_pw_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:demo/widgets/button.dart';
@@ -85,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
             errorMessage = 'パスワードが正しくありません。';
             break;
           default:
-            errorMessage = '登録されたユーザーが見つかりません。';
+            errorMessage = '登録されたユーザーが見つかりません。または、パスワード、メールアドレスのいずれかが間違っています。';
         }
       });
     } finally {
@@ -132,11 +133,19 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'パスワードをお忘れですか ?',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => ForgotPwScreen()),
+                          );
+                        },
+                        child: Text(
+                          'パスワードをお忘れですか ?',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
