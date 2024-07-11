@@ -107,31 +107,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 50),
-
-              // logo
-              const Icon(
-                Icons.lock,
-                size: 50,
-              ),
-
-              const SizedBox(height: 50),
-
-              // welcome back, you've been missed!
-              Text(
-                'Let\'s create your account!',
-                style: TextStyle(
-                  color: Colors.grey[700],
-                  fontSize: 16,
-                ),
-              ),
-
-              const SizedBox(height: 25),
-
-              // username textfield
               MyTextField(
                 controller: emailController,
-                hintText: 'Email',
+                hintText: 'メールアドレス',
                 obscureText: false,
               ),
 
@@ -140,40 +118,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
               // password textfield
               MyTextField(
                 controller: passwordController,
-                hintText: 'Password',
+                hintText: 'パスワード',
                 obscureText: true,
               ),
 
               const SizedBox(height: 10),
 
-              // password configuration textfield
               MyTextField(
                 controller: passwordConfigController,
-                hintText: 'Confirm Password',
+                hintText: 'パスワードの確認',
                 obscureText: true,
               ),
 
               const SizedBox(height: 10),
-
-              // display error message
-              Container(
-                height: 20, // 固定の高さを設定
-                child: errorMessage.isNotEmpty
-                    ? Text(
-                        errorMessage,
-                        style: TextStyle(color: Colors.red),
-                      )
-                    : Container(), // エラーメッセージがない場合は空のコンテナを表示
+              Text(
+                passwordController.text,
+                style: TextStyle(
+                  color: Colors.grey[700],
+                  fontSize: 16,
+                ),
               ),
-
-              const SizedBox(height: 10), // 余白を追加
+              const SizedBox(height: 10),
 
               // sign in button
               MyButton(
-                buttonText: 'Sign Up',
+                buttonText: '続ける',
                 onTap: isLoading ? null : signUserUp,
-                child:
-                    isLoading ? CircularProgressIndicator() : Text('Sign Up'),
+                child: isLoading ? CircularProgressIndicator() : Text('続ける'),
+                textColor: Colors.white,
+                backgroundColor: Colors.blue,
               ),
 
               const SizedBox(height: 30),
@@ -192,7 +165,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Text(
-                        'Or continue with',
+                        'または',
                         style: TextStyle(color: Colors.grey[700]),
                       ),
                     ),
@@ -208,18 +181,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
               const SizedBox(height: 30),
 
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              const Column(
                 children: [
-                  // google button
                   SquareTile(
                     imagePath: 'lib/images/google.png',
+                    text: 'Googleで続ける',
                   ),
-
-                  SizedBox(width: 25),
-
-                  // apple button
-                  // SquareTile(imagePath: 'lib/images/apple.png')
+                  SizedBox(height: 10),
+                  SquareTile(
+                    imagePath: 'lib/images/apple.png',
+                    text: 'Appleで続ける',
+                  ),
                 ],
               ),
             ],

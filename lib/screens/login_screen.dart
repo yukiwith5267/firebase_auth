@@ -1,4 +1,3 @@
-import 'package:demo/screens/register_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:demo/widgets/button.dart';
@@ -30,10 +29,28 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
       setState(() {
-        errorMessage = 'Please fill in all fields';
+        errorMessage = 'メールアドレスとパスワードを入力してください';
         isLoading = false;
       });
       return;
+    }
+
+    // Add validation for email format
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+        .hasMatch(emailController.text)) {
+      setState(() {
+        errorMessage = '正しいメールアドレスの形式を入力してください。';
+        isLoading = false;
+      });
+      return;
+    }
+
+    // Add extension mark to empty fields
+    if (emailController.text.isEmpty) {
+      emailController.text = emailController.text + ' *';
+    }
+    if (passwordController.text.isEmpty) {
+      passwordController.text = passwordController.text + ' *';
     }
 
     try {
@@ -58,13 +75,13 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         switch (e.code) {
           case 'user-not-found':
-            errorMessage = 'No user found for that email.';
+            errorMessage = 'ユーザーが見つかりません。';
             break;
           case 'wrong-password':
-            errorMessage = 'Wrong password provided for that user.';
+            errorMessage = 'パスワードが間違っています。';
             break;
           default:
-            errorMessage = 'No user found for that email.';
+            errorMessage = 'ユーザーが見つかりません。';
         }
       });
     } finally {
@@ -78,6 +95,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+      ),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Center(
@@ -85,30 +105,10 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 50),
-
-                // logo
-                const Icon(
-                  Icons.lock,
-                  size: 50,
-                ),
-
-                const SizedBox(height: 50),
-
-                // welcome back, you've been missed!
-                Text(
-                  'Welcome back you\'ve been missed!',
-                  style: TextStyle(
-                    color: Colors.grey[700],
-                    fontSize: 16,
-                  ),
-                ),
-
-                const SizedBox(height: 25),
-
                 // username textfield
                 MyTextField(
                   controller: emailController,
-                  hintText: 'Email',
+                  hintText: 'メールアドレス',
                   obscureText: false,
                 ),
 
@@ -117,21 +117,24 @@ class _LoginScreenState extends State<LoginScreen> {
                 // password textfield
                 MyTextField(
                   controller: passwordController,
-                  hintText: 'Password',
+                  hintText: 'パスワード',
                   obscureText: true,
                 ),
 
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
 
                 // forgot password?
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Forgot Password?',
-                        style: TextStyle(color: Colors.grey[600]),
+                        'パスワードをお忘れですか ?',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
@@ -154,10 +157,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 // sign in button
                 MyButton(
-                  buttonText: 'Sign In',
+                  buttonText: 'ログイン',
                   onTap: isLoading ? null : signUserIn,
-                  child:
-                      isLoading ? CircularProgressIndicator() : Text('Sign In'),
+                  child: isLoading ? CircularProgressIndicator() : Text('ログイン'),
+                  textColor: Colors.white,
+                  backgroundColor: Colors.blue,
                 ),
 
                 const SizedBox(height: 50),
@@ -176,7 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         child: Text(
-                          'Or continue with',
+                          'または',
                           style: TextStyle(color: Colors.grey[700]),
                         ),
                       ),
@@ -192,49 +196,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 30),
                 // google + apple sign in buttons
-                
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+
+                const Column(
                   children: [
-                    // google button
-                    SquareTile(imagePath: 'lib/images/google.png'),
-
-                    SizedBox(width: 25),
-
-                    // apple button
-                    SquareTile(imagePath: 'lib/images/apple.png')
+                    SquareTile(
+                        imagePath: 'lib/images/google.png', text: 'Googleで続ける'),
+                    SizedBox(height: 10),
+                    SquareTile(
+                        imagePath: 'lib/images/apple.png', text: 'Appleで続ける'),
                   ],
                 ),
-
-                const SizedBox(height: 30),
-
-                // not a member? register now
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Not a member?',
-                      style: TextStyle(color: Colors.grey[700]),
-                    ),
-                    const SizedBox(width: 4),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => RegisterScreen()),
-                        );
-                      },
-                      child: const Text(
-                        'Register now',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
               ],
             ),
           ),
