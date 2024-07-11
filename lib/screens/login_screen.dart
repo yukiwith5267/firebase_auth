@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:demo/widgets/button.dart';
 import 'package:demo/widgets/textfield.dart';
 import 'package:demo/widgets/square_tile.dart';
-import 'package:demo/screens/home_screen.dart'; // HomeScreenのインポート
+import 'package:demo/screens/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({super.key});
@@ -45,20 +45,16 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    // Add extension mark to empty fields
-    if (emailController.text.isEmpty) {
-      emailController.text = emailController.text + ' *';
-    }
-    if (passwordController.text.isEmpty) {
-      passwordController.text = passwordController.text + ' *';
-    }
-
     try {
       // Show CircularProgressIndicator while waiting
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => Center(child: CircularProgressIndicator()),
+        builder: (context) => Center(
+          child: CircularProgressIndicator(
+            color: Colors.blue,
+          ),
+        ),
       );
 
       await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -66,29 +62,36 @@ class _LoginScreenState extends State<LoginScreen> {
         password: passwordController.text,
       );
 
-      // サインインに成功した場合、HomeScreenに遷移
+      // Close the dialog and navigate to HomeScreen upon successful sign-in
+      Navigator.pop(context); // Close the dialog
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomeScreen()),
       );
     } on FirebaseAuthException catch (e) {
+      Navigator.pop(context); // Close the dialog in case of an error
       setState(() {
         switch (e.code) {
+          case 'invalid-email':
+            errorMessage = 'メールアドレスが無効です。';
+            break;
+          case 'user-disabled':
+            errorMessage = 'このユーザーは無効化されています。';
+            break;
           case 'user-not-found':
-            errorMessage = 'ユーザーが見つかりません。';
+            errorMessage = 'そのメールアドレスで登録されたユーザーが見つかりません。';
             break;
           case 'wrong-password':
-            errorMessage = 'パスワードが間違っています。';
+            errorMessage = 'パスワードが正しくありません。';
             break;
           default:
-            errorMessage = 'ユーザーが見つかりません。';
+            errorMessage = '登録されたユーザーが見つかりません。';
         }
       });
     } finally {
       setState(() {
         isLoading = false;
       });
-      Navigator.pop(context);
     }
   }
 
@@ -144,16 +147,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 // display error message
                 Container(
-                  height: 20, // 固定の高さを設定
+                  padding: EdgeInsets.symmetric(horizontal: 25.0),
                   child: errorMessage.isNotEmpty
                       ? Text(
                           errorMessage,
                           style: TextStyle(color: Colors.red),
+                          textAlign: TextAlign.center,
                         )
-                      : Container(), // エラーメッセージがない場合は空のコンテナを表示
+                      : Container(),
                 ),
 
-                const SizedBox(height: 10), // 余白を追加
+                const SizedBox(height: 10),
 
                 // sign in button
                 MyButton(
@@ -195,15 +199,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
 
                 const SizedBox(height: 30),
-                // google + apple sign in buttons
 
                 const Column(
                   children: [
                     SquareTile(
-                        imagePath: 'lib/images/google.png', text: 'Googleで続ける'),
+                      imagePath: 'lib/images/google.png',
+                      text: 'Googleで続ける',
+                    ),
                     SizedBox(height: 10),
                     SquareTile(
-                        imagePath: 'lib/images/apple.png', text: 'Appleで続ける'),
+                      imagePath: 'lib/images/apple.png',
+                      text: 'Appleで続ける',
+                    ),
                   ],
                 ),
               ],
