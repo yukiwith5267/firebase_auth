@@ -1,4 +1,5 @@
 import 'package:demo/screens/forgot_pw_screen.dart';
+import 'package:demo/services/auth_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:demo/widgets/button.dart';
@@ -137,7 +138,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => ForgotPwScreen()),
+                            MaterialPageRoute(
+                                builder: (context) => ForgotPwScreen()),
                           );
                         },
                         child: Text(
@@ -209,11 +211,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 30),
 
-                const Column(
+                Column(
                   children: [
                     SquareTile(
                       imagePath: 'lib/images/google.png',
                       text: 'Googleで続ける',
+                      onTap: () async {
+                        final user = await AuthServices().signInWithGoogle();
+                        if (user != null) {
+                          Navigator.pushReplacement(
+                              // ignore: use_build_context_synchronously
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HomeScreen()));
+                        }
+                      },
                     ),
                     SizedBox(height: 10),
                     SquareTile(

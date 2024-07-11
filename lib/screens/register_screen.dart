@@ -1,3 +1,4 @@
+import 'package:demo/services/auth_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:demo/widgets/button.dart';
@@ -177,9 +178,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 const SizedBox(height: 30),
 
-                const Column(
+                Column(
                   children: [
                     SquareTile(
+                      onTap: () async {
+                        final user = await AuthServices().signInWithGoogle();
+                        if (user != null) {
+                          // ignore: use_build_context_synchronously
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                        }
+                      },
                       imagePath: 'lib/images/google.png',
                       text: 'Googleで続ける',
                     ),
