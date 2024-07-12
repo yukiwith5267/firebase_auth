@@ -12,6 +12,7 @@ class ForgotPwScreen extends StatefulWidget {
 class _ForgotPwScreenState extends State<ForgotPwScreen> {
   final _emailController = TextEditingController();
 
+  @override
   void dispose() {
     _emailController.dispose();
     super.dispose();
@@ -22,22 +23,25 @@ class _ForgotPwScreenState extends State<ForgotPwScreen> {
       await FirebaseAuth.instance
           .sendPasswordResetEmail(email: _emailController.text);
       showDialog(
+        // ignore: use_build_context_synchronously
         context: context,
         builder: (context) {
           return AlertDialog(
             title: Text(
-              'メールアドレス宛にリンクを送信しました。そちらからパスワードを再設定してください。',
+              'メールアドレス宛にリンクを送信しました。パスワードのの再設定を行なってください。',
               style: TextStyle(fontSize: 13, color: Colors.grey[700]),
             ),
           );
         },
       );
     } on FirebaseAuthException catch (e) {
+      // ignore: avoid_print
       print(e);
       showDialog(
+        // ignore: use_build_context_synchronously
         context: context,
         builder: (context) {
-          return AlertDialog(
+          return const AlertDialog(
             title: Text(
               'メールアドレスが見つかりませんでした。',
               style: TextStyle(fontSize: 13, color: Colors.deepOrange),
@@ -58,7 +62,7 @@ class _ForgotPwScreenState extends State<ForgotPwScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(height: 200),
+            const SizedBox(height: 100),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
@@ -70,13 +74,13 @@ class _ForgotPwScreenState extends State<ForgotPwScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             MyTextField(
               hintText: 'メールアドレス',
               controller: _emailController,
               obscureText: false,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             MaterialButton(
               color: Colors.blue,
               shape: RoundedRectangleBorder(
@@ -85,7 +89,7 @@ class _ForgotPwScreenState extends State<ForgotPwScreen> {
               onPressed: () {
                 passwordReset();
               },
-              child: Text(
+              child: const Text(
                 'パスワードを再設定する',
                 style: TextStyle(color: Colors.white),
               ),

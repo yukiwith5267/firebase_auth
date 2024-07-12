@@ -16,7 +16,7 @@ class AuthScreen extends StatelessWidget {
             return HomeScreen();
           }
           else {
-            return LoginOrRegisterScreen();
+            return const LoginOrRegisterScreen();
           }
         },
       ),

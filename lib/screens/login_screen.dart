@@ -8,9 +8,10 @@ import 'package:demo/widgets/square_tile.dart';
 import 'package:demo/screens/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen({super.key});
+  const LoginScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _LoginScreenState createState() => _LoginScreenState();
 }
 
@@ -52,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => Center(
+        builder: (context) => const Center(
           child: CircularProgressIndicator(
             color: Colors.blue,
           ),
@@ -65,12 +66,15 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       // Close the dialog and navigate to HomeScreen upon successful sign-in
+      // ignore: use_build_context_synchronously
       Navigator.pop(context); // Close the dialog
       Navigator.pushReplacement(
+        // ignore: use_build_context_synchronously
         context,
         MaterialPageRoute(builder: (context) => HomeScreen()),
       );
     } on FirebaseAuthException catch (e) {
+      // ignore: use_build_context_synchronously
       Navigator.pop(context); // Close the dialog in case of an error
       setState(() {
         switch (e.code) {
@@ -139,10 +143,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ForgotPwScreen()),
+                                builder: (context) => const ForgotPwScreen()),
                           );
                         },
-                        child: Text(
+                        child: const Text(
                           'パスワードをお忘れですか ?',
                           style: TextStyle(
                             color: Colors.blue,
@@ -158,11 +162,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 // display error message
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 25.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: errorMessage.isNotEmpty
                       ? Text(
                           errorMessage,
-                          style: TextStyle(color: Colors.red),
+                          style: const TextStyle(color: Colors.red),
                           textAlign: TextAlign.center,
                         )
                       : Container(),
@@ -174,9 +178,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 MyButton(
                   buttonText: 'ログイン',
                   onTap: isLoading ? null : signUserIn,
-                  child: isLoading ? CircularProgressIndicator() : Text('ログイン'),
                   textColor: Colors.white,
                   backgroundColor: Colors.blue,
+                  child: isLoading ? const CircularProgressIndicator() : const Text('ログイン'),
                 ),
 
                 const SizedBox(height: 50),
@@ -217,20 +221,33 @@ class _LoginScreenState extends State<LoginScreen> {
                       imagePath: 'lib/images/google.png',
                       text: 'Googleで続ける',
                       onTap: () async {
-                        final user = await AuthServices().signInWithGoogle();
+                        setState(() {
+                          isLoading = true;
+                        });
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) => const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.blue,
+                            ),
+                          ),
+                        );
+                        final user =
+                            await GoogleAuthServices().signInWithGoogle();
                         if (user != null) {
                           Navigator.pushReplacement(
+                            // ignore: use_build_context_synchronously
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => HomeScreen()),
+                          );
+                        } else {
+                          Navigator.pop(
                               // ignore: use_build_context_synchronously
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomeScreen()));
+                              context); // Close the CircularProgressIndicator
                         }
                       },
-                    ),
-                    SizedBox(height: 10),
-                    SquareTile(
-                      imagePath: 'lib/images/apple.png',
-                      text: 'Appleで続ける',
                     ),
                   ],
                 ),

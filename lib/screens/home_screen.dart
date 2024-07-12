@@ -21,7 +21,7 @@ class HomeScreen extends StatelessWidget {
                 context,
                 PageRouteBuilder(
                   pageBuilder: (context, animation1, animation2) =>
-                      LoginOrRegisterScreen(),
+                      const LoginOrRegisterScreen(),
                   transitionsBuilder: (context, animation1, animation2, child) {
                     var begin = Offset(-1.0, 0.0);
                     var end = Offset.zero;

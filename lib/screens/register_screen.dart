@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:demo/services/auth_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,9 +9,10 @@ import 'package:demo/widgets/square_tile.dart';
 import 'package:demo/screens/home_screen.dart'; // HomeScreenのインポート
 
 class RegisterScreen extends StatefulWidget {
-  RegisterScreen({super.key});
+  const RegisterScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _RegisterScreenState createState() => _RegisterScreenState();
 }
 
@@ -55,7 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => Center(
+        builder: (context) => const Center(
           child: CircularProgressIndicator(
             color: Colors.blue,
           ),
@@ -130,20 +133,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 MyButton(
                   buttonText: '続ける',
                   onTap: isLoading ? null : signUserUp,
-                  child: isLoading ? CircularProgressIndicator() : Text('続ける'),
                   textColor: Colors.white,
                   backgroundColor: Colors.blue,
+                  child: isLoading ? const CircularProgressIndicator() : const Text('続ける'),
                 ),
 
                 const SizedBox(height: 10),
 
                 // display error message
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 25.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: errorMessage.isNotEmpty
                       ? Text(
                           errorMessage,
-                          style: TextStyle(color: Colors.red),
+                          style: const TextStyle(color: Colors.red),
                           textAlign: TextAlign.center,
                         )
                       : Container(),
@@ -182,19 +185,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     SquareTile(
                       onTap: () async {
-                        final user = await AuthServices().signInWithGoogle();
+                        setState(() {
+                          isLoading = true;
+                        });
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) => const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.blue,
+                            ),
+                          ),
+                        );
+                        final user =
+                            await GoogleAuthServices().signInWithGoogle();
                         if (user != null) {
-                          // ignore: use_build_context_synchronously
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => HomeScreen()),
+                          );
+                        } else {
+                          Navigator.pop(
+                              context); // Close the CircularProgressIndicator
                         }
                       },
                       imagePath: 'lib/images/google.png',
                       text: 'Googleで続ける',
-                    ),
-                    SizedBox(height: 10),
-                    SquareTile(
-                      imagePath: 'lib/images/apple.png',
-                      text: 'Appleで続ける',
                     ),
                   ],
                 ),
